@@ -1,0 +1,33 @@
+image: node:10
+
+stages:
+  - testing
+  - deploy
+
+cache:
+  untracked: true
+  key: "$CI_BUILD_REF_NAME"
+  paths:
+    - node_modules/
+
+
+testing:
+  stage: testing
+  before_script:
+    - npm config set prefix /usr/local
+    - npm install -g jest
+    - npm install
+  script:
+    - jest __tests__/index.test
+  environment: development
+  only:
+    - master
+deploy:
+  stage: deploy
+  before_script:
+    - npm install -g serverless
+  script:
+    - serverless deploy --stage pro --verbose
+  environment: production
+  only:
+    - master

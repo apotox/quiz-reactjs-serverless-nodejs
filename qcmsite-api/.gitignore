@@ -1,0 +1,5 @@
+node_modules
+*.txt
+configs.dev.json
+configs.pro.json
+configs.test.json

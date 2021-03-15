@@ -1,0 +1,154 @@
+service: qcmsite-api
+custom:
+  configs: ${file(configs.${opt:stage,"dev"}.json)}
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 512
+  versionFunctions: false
+  timeout: 10
+  stage: ${self:custom.configs.STAGE}
+  region: ${self:custom.configs.REGION}
+  endpointType: REGIONAL
+  environment:
+    REGION: ${self:custom.configs.REGION}
+    STAGE: ${self:custom.configs.STAGE}
+    MONGO_PASS: ${self:custom.configs.MONGO_PASS}
+    MONGO_USER: ${self:custom.configs.MONGO_USER}
+    MONGO_DB: ${self:custom.configs.MONGO_DB}
+    MONGO_ADR: ${self:custom.configs.MONGO_ADR}
+    JWT_SECRET: ${self:custom.configs.JWT_SECRET}
+    MAIL_SUBJECT: ${self:custom.configs.MAIL_SUBJECT}
+    MAIL_REPLYTO: ${self:custom.configs.MAIL_REPLYTO}
+    MAIL_NAME: ${self:custom.configs.MAIL_NAME}
+    MAIL_PASSWORD: ${self:custom.configs.MAIL_PASSWORD}
+    SENDGRID_API_KEY: ${self:custom.configs.SENDGRID_API_KEY}
+
+functions:
+  authorizerFunc:
+    handler: services/authorizers.rsaJwt
+  #user endpoints
+  indexUser:
+    handler: endpoints/user.index
+    events:
+      - http:
+          path: user
+          method: get
+          cors: true
+          authorizer: authorizerFunc
+  demandInscription:
+    handler: endpoints/user.demandInscription
+    events:
+      - http:
+          path: demandInscription
+          method: post
+          cors: true
+  login:
+    handler: endpoints/user.login
+    events:
+      - http:
+          path: userLogin
+          method: post
+          cors: true
+  resetPassword:
+    handler: endpoints/user.resetPassword
+    events:
+      - http:
+          path: resetPassword
+          method: put
+          cors: true
+          authorizer: authorizerFunc
+  acceptUser:
+    handler: endpoints/user.acceptUser
+    events:
+      - http:
+          path: acceptUser
+          method: put
+          cors: true
+          authorizer: authorizerFunc
+  getMe:
+    handler: endpoints/user.getMe
+    events:
+      - http:
+          path: getMe
+          method: get
+          cors: true
+          authorizer: authorizerFunc
+  deleteUser:
+    handler: endpoints/user.destroy
+    events:
+      - http:
+          path: deleteUser
+          method: delete
+          cors: true
+          authorizer: authorizerFunc
+  #Qcm endpoints
+  indexQcm:
+    handler: endpoints/qcm.index
+    events:
+      - http:
+          path: indexQcm
+          method: get
+          cors: true
+          authorizer: authorizerFunc
+  createQcm:
+    handler: endpoints/qcm.create
+    events:
+      - http:
+          path: createQcm
+          method: post
+          cors: true
+          authorizer: authorizerFunc
+  updateQcm:
+    handler: endpoints/qcm.update
+    events:
+      - http:
+          path: updateQcm
+          method: put
+          cors: true
+          authorizer: authorizerFunc
+  deleteQcm:
+    handler: endpoints/qcm.destroy
+    events:
+      - http:
+          path: deleteQcm
+          method: delete
+          cors: true
+          authorizer: authorizerFunc
+  #Category endpoints
+  indexCategory:
+    handler: endpoints/category.index
+    events:
+      - http:
+          path: indexCategory
+          method: get
+          cors: true
+          authorizer: authorizerFunc
+  createCategory:
+    handler: endpoints/category.create
+    events:
+      - http:
+          path: createCategory
+          method: post
+          cors: true
+          authorizer: authorizerFunc
+  updateCategory:
+    handler: endpoints/category.update
+    events:
+      - http:
+          path: updateCategory
+          method: put
+          cors: true
+          authorizer: authorizerFunc
+  deleteCategory:
+    handler: endpoints/category.destroy
+    events:
+      - http:
+          path: deleteCategory
+          method: delete
+          cors: true
+          authorizer: authorizerFunc
+
+plugins:
+  - serverless-offline
